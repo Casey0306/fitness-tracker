@@ -49,10 +49,13 @@ class GetUserActivitiesView(RetrieveAPIView):
                 timedelta = 24
             user = request.user
             if user.is_verified:
-                time_low_border = timezone.now() - datetime.timedelta(hours=timedelta)
-                result_queryset = Fitstat.objects.filter(user=user,
-                                                         start_time__gte=time_low_border,
-                                                         stop_time__gte=time_low_border).all()
+                time_low_border = \
+                    timezone.now() - datetime.timedelta(hours=timedelta)
+                result_queryset = \
+                    Fitstat.objects.filter(
+                        user=user,
+                        start_time__gte=time_low_border,
+                        stop_time__gte=time_low_border).all()
                 for query in result_queryset:
                     result_calories = result_calories + query.calories
                     result_distance = result_distance + query.distance
@@ -90,4 +93,3 @@ class GetUserActivitiesView(RetrieveAPIView):
                 'error': str(e)
                 }
         return Response(response, status=status_code)
-

@@ -1,13 +1,11 @@
-from django.shortcuts import render
-from rest_framework.views import APIView
-from django.shortcuts import render
 from .renderers import UserRenderer
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.models import update_last_login
 from rest_framework.permissions import AllowAny
 from rest_framework import generics, status, views, permissions
 from rest_framework.response import Response
-from rest_framework.generics import GenericAPIView, RetrieveAPIView, CreateAPIView
+from rest_framework.generics import GenericAPIView,\
+    RetrieveAPIView, CreateAPIView
 from .serializers import RegisterSerializer, EmailVerificationSerializer,\
     GetTokenSerializer, RepeatedSentEmailSerializer
 from django.urls import reverse
@@ -18,7 +16,6 @@ from drf_yasg import openapi
 import jwt
 from django.conf import settings
 import datetime
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 
 class RegisterView(GenericAPIView):
@@ -71,7 +68,8 @@ class RepeatedSentEmailVerifyView(GenericAPIView):
         token = token_enc.decode('utf-8')
         current_site = get_current_site(request).domain
         relativeLink = reverse('email-verify')
-        absurl = 'http://' + current_site + relativeLink + "?token=" + str(token)
+        absurl = 'http://' + current_site + relativeLink +\
+                 "?token=" + str(token)
         email_body = 'Hi ' + \
                      ' Use the link below to verify your email \n' + absurl
         data = {'email_body': email_body, 'to_email': user.email,
@@ -87,7 +85,10 @@ class VerifyEmail(views.APIView):
     serializer_class = EmailVerificationSerializer
 
     token_param_config = openapi.Parameter(
-        'token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+        'token',
+        in_=openapi.IN_QUERY,
+        description='Description',
+        type=openapi.TYPE_STRING)
 
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
@@ -98,11 +99,14 @@ class VerifyEmail(views.APIView):
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+            return Response({'email': 'Successfully activated'},
+                            status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError as identifier:
-            return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Activation Expired'},
+                            status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
-            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalid token'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetTokenView(RetrieveAPIView):

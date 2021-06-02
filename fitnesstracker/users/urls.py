@@ -1,5 +1,6 @@
 from django.conf.urls import url
-from .views import RegisterView, VerifyEmail, GetTokenView, RepeatedSentEmailVerifyView
+from .views import RegisterView, VerifyEmail, GetTokenView,\
+    RepeatedSentEmailVerifyView
 
 
 urlpatterns = [

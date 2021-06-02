@@ -3,11 +3,6 @@ from .models import User
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
-import datetime
-import jwt
-from .utils import Util
-from django.urls import reverse
-from django.conf import settings
 
 
 JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
@@ -28,7 +23,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         email = attrs.get('email', None)
         user_temp = User.objects.filter(email=email).first()
         if user_temp:
-            raise serializers.ValidationError('Email record already exists in db')
+            raise serializers.ValidationError(
+                'Email record already exists in db')
         return attrs
 
     def create(self, validated_data):
@@ -47,7 +43,8 @@ class RepeatedSentEmailSerializer(serializers.ModelSerializer):
         email = attrs.get('email', None)
         user_temp = User.objects.filter(email=email).first()
         if not user_temp:
-            raise serializers.ValidationError('Email record does not exists in db')
+            raise serializers.ValidationError(
+                'Email record does not exists in db')
         if user_temp.is_verified is True:
             raise serializers.ValidationError('Email record already verified')
         return attrs
